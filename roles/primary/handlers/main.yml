@@ -1,0 +1,8 @@
+---
+- name: restart postgresql94
+  become: yes
+  become_user: root
+  become_method: sudo
+  service:
+    name: '{{ postgresql_service }}'
+    state: restarted

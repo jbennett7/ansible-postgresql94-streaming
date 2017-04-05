@@ -1,0 +1,4 @@
+standby_mode = 'on'
+primary_conninfo = 'host={{ hostvars['primary-db']['ansible_default_ipv4']['address'] }} port=5432 user={{ replication_user }} password={{ replication_user_password }}'
+trigger_file = '{{ failover_trigger_file }}'
+restore_command = 'cp {{ replication_archive }}/%f "%p"'

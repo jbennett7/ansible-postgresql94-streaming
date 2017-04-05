@@ -1,0 +1,16 @@
+---
+- name: Replication user on primary database '{{ ansible_hostname }}'
+  postgresql_user:
+    name: '{{ replication_user }}'
+    password: '{{ replication_user_password }}'
+    role_attr_flags: 'LOGIN,REPLICATION'
+
+- name: Template configuration files for primary database '{{ ansible_hostname }}'
+  template:
+    src: '{{ item }}.conf.j2'
+    dest: '{{ dbpath }}/{{ item }}.conf'
+    owner: postgres
+    group: postgres
+  with_items:
+    '{{ config_files }}'
+  notify: restart postgresql94

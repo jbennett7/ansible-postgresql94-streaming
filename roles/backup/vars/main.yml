@@ -1,0 +1,12 @@
+---
+replication_user: 'replication'
+replication_user_password: 'replication'
+replication_db: 'replication'
+replication_archive: '/var/lib/pgsql/9.4/backup'
+dbpath: '/var/lib/pgsql/9.4/data'
+failover_trigger_file: '/var/lib/pgsql/9.4/failover'
+postgresql_service: 'postgresql-9.4'
+config_files:
+  - 'pg_hba'
+  - 'postgresql'
+  - 'recovery'

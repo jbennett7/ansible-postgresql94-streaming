@@ -1,0 +1,9 @@
+[submodule "roles/ansible-ec2-testinstance"]
+	path = roles/ansible-ec2-testinstance
+	url = https://github.com/jbennett7/ansible-ec2-testinstance
+[submodule "roles/ansible-postgres94-server"]
+	path = roles/ansible-postgres94-server
+	url = https://github.com/jbennettconsulting/ansible-postgres94-server.git
+[submodule "roles/ansible-postgresql94-server"]
+	path = roles/ansible-postgresql94-server
+	url = https://github.com/jbennett7/ansible-postgresql94-server

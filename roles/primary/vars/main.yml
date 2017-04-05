@@ -1,0 +1,9 @@
+---
+replication_user: 'replication'
+replication_user_password: 'replication'
+replication_db: 'replication'
+dbpath: '/var/lib/pgsql/9.4/data'
+postgresql_service: 'postgresql-9.4'
+config_files:
+  - 'pg_hba'
+  - 'postgresql'

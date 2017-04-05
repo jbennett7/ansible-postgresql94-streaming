@@ -1,0 +1,39 @@
+---
+- name: The .pgpass file
+  copy:
+    dest: '/var/lib/pgsql/.pgpass'
+    content: "{{ hostvars['primary-db']['ansible_default_ipv4']['address'] }}:5432:{{ replication_db }}:{{ replication_user }}:{{ replication_user_password }}"
+    mode: 0600
+
+- name: Ensure that '{{ postgresql_service }}' is stopped
+  service:
+    name: '{{ postgresql_service }}'
+    state: stopped
+
+- name: Ensure that the database directory is empty '{{ dbpath }}'
+  file:
+    path: "{{ dbpath }}"
+    state: absent
+
+- name: Seed the backup database server with initial information from the primary server "{{ hostvars['primary-db']['ansible_default_ipv4']['address'] }}"
+  command: pg_basebackup -h "{{ hostvars['primary-db']['ansible_default_ipv4']['address'] }}" -D "{{ dbpath }}" -P -U "{{ replication_user }}" --xlog-method=stream
+  args:
+    creates: '{{ dbpath }}/PG_VERSION'
+
+- name: Template configuration file installation for backup database '{{ ansible_hostname }}'
+  template:
+    src: '{{ item }}.conf.j2'
+    dest: '{{ dbpath }}/{{ item }}.conf'
+    owner: postgres
+    group: postgres
+  with_items:
+    '{{ config_files }}'
+
+- name: Start the backup database server '{{ ansible_hostname }}'
+  become: yes
+  become_user: root
+  become_method: sudo
+  service:
+    name: '{{ postgresql_service }}'
+    state: started
+    enabled: yes

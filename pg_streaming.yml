@@ -8,6 +8,15 @@
   roles:
     - ansible-ec2-testinstance
 
+- name: Setup the backup test instance
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+    - in_memory_hostgroup_name: 'backup'
+  roles:
+    - ansible-ec2-testinstance
+
 - name: Install postgresql onto the test primary instance
   hosts: primary
   remote_user: ec2-user
@@ -17,15 +26,6 @@
   roles: 
     - { role: ansible-postgresql94-server, tags: deploy }
     - { role: primary, tags: deploy }
-
-- name: Setup the backup test instance
-  hosts: localhost
-  connection: local
-  gather_facts: False
-  vars:
-    - in_memory_hostgroup_name: 'backup'
-  roles:
-    - ansible-ec2-testinstance
 
 - name: Install postgresql onto the test backup instance
   hosts: backup

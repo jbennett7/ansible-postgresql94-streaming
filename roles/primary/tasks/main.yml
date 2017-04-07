@@ -1,11 +1,8 @@
 ---
-- name: Replication user on primary database '{{ ansible_hostname }}'
-  postgresql_user:
-    name: '{{ replication_user }}'
-    password: '{{ replication_user_password }}'
-    role_attr_flags: 'LOGIN,REPLICATION'
+- name: Initialize the database (for testing purposes only)
+  command: /usr/pgsql-9.4/bin/postgresql94-setup initdb
 
-- name: Template configuration files for primary database '{{ ansible_hostname }}'
+- name: Template configuration files for primary database {{ ansible_hostname }}
   template:
     src: '{{ item }}.conf.j2'
     dest: '{{ dbpath }}/{{ item }}.conf'
@@ -13,4 +10,28 @@
     group: postgres
   with_items:
     '{{ config_files }}'
-  notify: restart postgresql94
+  register: config
+
+- name: Start and enable appropriate services.
+  service:
+    name: '{{ item }}'
+    state: started
+    enabled: yes
+  with_items: '{{ running_services }}'
+  when: config|changed
+
+#- name: open up ports on firewall for postgres
+#  firewalld:
+#    port: '5432/tcp'
+#    permanent: true
+#    state: enabled
+
+- name: Replication user on primary database {{ ansible_hostname }}
+  postgresql_user:
+    name: '{{ replication_user }}'
+    password: '{{ replication_user_password }}'
+    role_attr_flags: 'LOGIN,REPLICATION'
+  become: yes
+  become_method: sudo
+  become_user: postgres
+
